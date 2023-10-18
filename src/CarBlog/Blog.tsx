@@ -150,8 +150,10 @@ function Blog() {
                                                 },
   ];
 
+
   return (
   <div style={{paddingTop: "90px"}} className='container'>
+
   <div className="row">
     <Header></Header>
   </div>
@@ -169,7 +171,8 @@ function Blog() {
                     </div>
                   ))}
                 </div>
-              </div>
+                </div>
+
   );
 }
 

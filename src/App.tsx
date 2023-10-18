@@ -3,6 +3,7 @@ import Login from './Login/Login';
 import { Route, Routes } from 'react-router-dom';
 import Carbon from './CarbonFootprint/Carbon';
 import Blog from './CarBlog/Blog';
+
 import UserDetails from './UserDetails/UserDetails';
 // Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,6 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 function App() {
   return (
+
     <div className="App">
       <Routes>
         <Route path="/" element={<Login/>}></Route>
