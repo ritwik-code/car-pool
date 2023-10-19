@@ -55,6 +55,68 @@ public class CarSharingClusteringV12 {
             System.out.println("Cluster " + (i + 1) + ":");
             clusters.get(i).printUsers();
         }
+        List<String> carOwnerDetails = addCarOwnerDetails_WhoIsDoingCarPooling(clusters);
+
+        for (String carOwnerDetail : carOwnerDetails) {
+            calculatePricePerHeadForEachCluster(carOwnerDetail);
+        }
+    }
+
+    public static ArrayList<String> addCarOwnerDetails_WhoIsDoingCarPooling(List<Cluster> clusters) {
+        ArrayList<String> carOwnerDetails = new ArrayList<>();
+        for (Cluster cluster : clusters) {
+            for (User user : cluster.users) {
+                if (user.getVehicleCapacity() > 0 && cluster.users.size() > 1) {
+                    carOwnerDetails.add(user.id + ":" + user.latitude + ":" + user.longitude + ":" + cluster.users.size());
+                    break;
+                }
+            }
+        }
+        return carOwnerDetails;
+    }
+
+    public static void calculatePricePerHeadForEachCluster(String ownerDetails) {
+        UbsLocationDetails ubsLocationDetails = new UbsLocationDetails();
+        System.out.println("ownerDetails = " + ownerDetails);
+        String[] splitOfOwnerDetails = ownerDetails.split(":");
+
+        String ownerID = splitOfOwnerDetails[0];
+        Double sourceLatitude = Double.parseDouble(splitOfOwnerDetails[1]);
+        Double sourceLongitude = Double.parseDouble(splitOfOwnerDetails[2]);
+        int dependants = Integer.parseInt(splitOfOwnerDetails[3]) - 1;
+
+        int distanceFromSourceToDestination = (int) Math.round(ubsLocationDetails.getDistanceToUbs(sourceLatitude, sourceLongitude));
+        int calculateTotalPriceToDestination = distanceFromSourceToDestination * ubsLocationDetails.pricePerKm;
+
+        System.out.println("Car Owner = " + ownerID +
+                "\nTotal dependants = " + dependants +
+                "\nTotal distance from owner location to ubs = " + distanceFromSourceToDestination +
+                "\nTotal price to destination = " + calculateTotalPriceToDestination +
+                "\nPrice Per head exclude car owner=" + calculateTotalPriceToDestination / dependants);
+    }
+
+    static class UbsLocationDetails {
+
+        private double latitude = 25.387407469614672;
+        private double longitude = 51.52157061749104;
+
+        private int pricePerKm = 2;
+
+        public double getDistanceToUbs(Double latitude, Double longitude) {
+            double earthRadius = 6371.0; // Earth radius in kilometers
+            double lat1 = Math.toRadians(latitude);
+            double lon1 = Math.toRadians(longitude);
+            double lat2 = Math.toRadians(this.latitude);
+            double lon2 = Math.toRadians(this.longitude);
+
+            double dlon = lon2 - lon1;
+            double dlat = lat2 - lat1;
+
+            double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return earthRadius * c;
+        }
     }
 
     static class User {
@@ -73,11 +135,13 @@ public class CarSharingClusteringV12 {
             this.longitude = longitude;
             this.vehicleCapacity = vehicleCapacity;
         }
+
         @Override
         public String toString() {
             return "User " + id + " (Name: " + firstName + " " + lastName +
                     ", Lat: " + latitude + ", Lon: " + longitude + ", Vehicle Capacity: " + vehicleCapacity + ")";
         }
+
         public int getVehicleCapacity() {
             return vehicleCapacity;
         }
