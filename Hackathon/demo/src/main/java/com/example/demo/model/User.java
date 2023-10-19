@@ -18,6 +18,9 @@ public class User {
         this.vehicleCapacity = vehicleCapacity;
     }
 
+    public User() {
+    }
+
     @Override
     public String toString() {
         return "User " + id + " (Name: " + firstName + " " + lastName +

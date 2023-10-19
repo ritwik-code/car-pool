@@ -11,9 +11,9 @@ import java.util.Optional;
 @Service
 public class CarPoolingService {
     private List<Cluster> clusters = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 
-
-    public List<Cluster> formClusters(List<User> users) {
+    private List<Cluster> formClusters() {
         for (User user : users) {
             boolean assigned = false;
 
@@ -44,5 +44,12 @@ public class CarPoolingService {
         return clusters.stream()
                 .filter(cluster -> cluster.getUsers().stream().anyMatch(user -> user.getId() == userId))
                 .findFirst();
+    }
+
+
+    public boolean addUser(User user) {
+        boolean result = users.add(user);
+        formClusters();
+        return true;
     }
 }
